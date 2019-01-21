@@ -1,23 +1,25 @@
 import {GET_LIST, UPDATE} from 'react-admin';
-import { stringify } from 'query-string';
+import axios from "axios"
 
-const API_URL = 'my.api.url';
+const API_URL = 'http:\\\\localhost:8081';
 
 const requestToHTTP = (type, resource, params) => {
   switch (type) {
     case GET_LIST: {
       let { page, perPage } = params.pagination;
       let { field, order } = params.sort;
-      let query = {
-        sort: JSON.stringify([field, order]),
-        range: JSON.stringify([(page - 1) * perPage, page * perPage - 1])
+      let body = {
+        sortField: field,
+        order: order,
+        start: (page - 1) * perPage,
+        end: page * perPage - 1
       };
-      return { url: `${API_URL}/${resource}?${stringify(query)}` };
+      return { url: `${API_URL}/fetch-${resource}`, body: body};
     }
     case UPDATE:
       return {
-        url: `${API_URL}/${resource}?${stringify({isSafe: params.data.isSafe, id: params.id})}`,
-        options: { method: 'PUT'}
+        url: `${API_URL}/${resource}`,
+        body: {isSafe: params.data.isSafe, id: params.id}
       };
     default:
       throw new Error(`Unsupported fetch action type ${type}`);
@@ -25,20 +27,19 @@ const requestToHTTP = (type, resource, params) => {
 };
 
 const HTTPResponseToData = (response, type, resource, params) => {
-  const { headers, json } = response;
   switch (type) {
     case GET_LIST:
       return {
-        data: json.map(x => x),
-        total: parseInt(headers.get('content-range').split('/').pop(), 10),
+        data: response.data.result,
+        total: response.data.count,
       };
     default:
-      return { data: json };
+      return { data: response.data.result };
   }
 };
 
 export default (type, resource, params) => {
-  const { url, options } = requestToHTTP(type, resource, params);
-  return fetch(url, options).then(r => r.json())
+  const { url, body } = requestToHTTP(type, resource, params);
+  return axios.post(url, JSON.stringify(body))
     .then(response => HTTPResponseToData(response, type, resource, params));
 };
