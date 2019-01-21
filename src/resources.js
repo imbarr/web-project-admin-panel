@@ -11,10 +11,13 @@ const SafetyButtons = props => (
   </Fragment>
 );
 
+const rowStyle = (record, index) => ({
+  backgroundColor: record.isSafe ? 'white' : 'indianred',
+});
 
 export const paymentsList = props =>
   <List {...props} bulkActionButtons={<SafetyButtons/>}>
-    <Datagrid>
+    <Datagrid rowStyle={rowStyle}>
       <NumberField source="id"/>
       <TextField source="cardNumber"/>
       <NumberField source="expirationMonth"/>
