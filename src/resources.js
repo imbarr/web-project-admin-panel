@@ -6,8 +6,8 @@ export const paymentsList = props =>
     <Datagrid>
       <NumberField source="id"/>
       <TextField source="cardNumber"/>
-      <TextField source="expirationMonth"/>
-      <TextField source="expirationYear"/>
+      <NumberField source="expirationMonth"/>
+      <NumberField source="expirationYear"/>
       <TextField source="CVC"/>
       <TextField source="money"/>
       <TextField source="comment"/>
@@ -24,7 +24,7 @@ export const requestsList = props =>
       <TextField source="BIC"/>
       <TextField source="accountNumber"/>
       <TextField source="VAT"/>
-      <TextField source="money"/>
+      <NumberField source="money"/>
       <TextField source="telephone"/>
       <EmailField source="email"/>
     </Datagrid>
