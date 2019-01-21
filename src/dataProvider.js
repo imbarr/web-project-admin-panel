@@ -1,4 +1,4 @@
-import {GET_LIST, UPDATE} from 'react-admin';
+import {GET_LIST, UPDATE_MANY} from 'react-admin';
 import axios from "axios"
 
 const API_URL = 'http:\\\\localhost:8081';
@@ -16,13 +16,11 @@ const requestToHTTP = (type, resource, params) => {
       };
       return { url: `${API_URL}/fetch-${resource}`, body: body};
     }
-    case UPDATE:
-      return {
-        url: `${API_URL}/${resource}`,
-        body: {isSafe: params.data.isSafe, id: params.id}
-      };
+    case UPDATE_MANY: {
+      return { url: `${API_URL}/payment`, body: {id: params.ids, isSafe: params.data.isSafe}};
+    }
     default:
-      throw new Error(`Unsupported fetch action type ${type}`);
+      throw new Error(`Unsupported Data Provider request type ${type}`);
   }
 };
 
@@ -34,7 +32,7 @@ const HTTPResponseToData = (response, type, resource, params) => {
         total: response.data.count,
       };
     default:
-      return { data: response.data.result };
+      return { data: response.data };
   }
 };
 

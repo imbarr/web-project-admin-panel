@@ -1,8 +1,19 @@
-import React from "react";
+import React, {Fragment} from "react";
 import { List, Datagrid, TextField, EmailField, BooleanField, NumberField } from 'react-admin';
+import MarkAsSafe from "./MarkAsSafe";
+import MarkAsUnsafe from "./MarkAsUnsafe";
+
+const SafetyButtons = props => (
+  <Fragment>
+    <MarkAsSafe {...props} />
+    {/* Add the default bulk delete action */}
+    <MarkAsUnsafe {...props} />
+  </Fragment>
+);
+
 
 export const paymentsList = props =>
-  <List {...props}>
+  <List {...props} bulkActionButtons={<SafetyButtons/>}>
     <Datagrid>
       <NumberField source="id"/>
       <TextField source="cardNumber"/>
@@ -17,7 +28,7 @@ export const paymentsList = props =>
   </List>;
 
 export const requestsList = props =>
-  <List {...props}>
+  <List {...props} bulkActionButtons={false}>
     <Datagrid>
       <NumberField source="id"/>
       <TextField source="taxId"/>
