@@ -1,7 +1,7 @@
 import {GET_LIST, UPDATE_MANY} from 'react-admin';
 import axios from "axios"
-
-const API_URL = 'http:\\\\localhost:8081';
+import config from "./config"
+import { stringify } from 'query-string';
 
 const requestToHTTP = (type, resource, params) => {
   switch (type) {
@@ -14,10 +14,14 @@ const requestToHTTP = (type, resource, params) => {
         start: (page - 1) * perPage,
         end: page * perPage - 1
       };
-      return { url: `${API_URL}/fetch-${resource}`, body: body};
+      return {method: 'GET', url: `${config.serverURL}/admin/${resource}?${stringify(body)}`};
     }
     case UPDATE_MANY: {
-      return { url: `${API_URL}/payment`, body: {id: params.ids, isSafe: params.data.isSafe}};
+      return {
+        method: 'PATCH',
+        data: {id: params.ids, isSafe: params.data.isSafe},
+        url: `${config.serverURL}/admin/${resource}`
+      }
     }
     default:
       throw new Error(`Unsupported Data Provider request type ${type}`);
@@ -28,8 +32,8 @@ const HTTPResponseToData = (response, type, resource, params) => {
   switch (type) {
     case GET_LIST:
       return {
-        data: response.data.result,
-        total: response.data.count,
+        data: response.data,
+        total: parseInt(response.headers['content-range'].split('/').pop(), 10),
       };
     default:
       return { data: response.data };
@@ -37,7 +41,6 @@ const HTTPResponseToData = (response, type, resource, params) => {
 };
 
 export default (type, resource, params) => {
-  const { url, body } = requestToHTTP(type, resource, params);
-  return axios.post(url, JSON.stringify(body))
-    .then(response => HTTPResponseToData(response, type, resource, params));
+  const request = requestToHTTP(type, resource, params);
+  return axios(request).then(response => HTTPResponseToData(response, type, resource, params));
 };
