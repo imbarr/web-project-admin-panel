@@ -1,12 +1,12 @@
 import React, {Fragment} from "react";
-import { List, Datagrid, TextField, EmailField, BooleanField, NumberField } from 'react-admin';
+import { List, Datagrid, TextField, EmailField, BooleanField,
+  NumberField } from 'react-admin';
 import MarkAsSafe from "./MarkAsSafe";
 import MarkAsUnsafe from "./MarkAsUnsafe";
 
 const SafetyButtons = props => (
   <Fragment>
     <MarkAsSafe {...props} />
-    {/* Add the default bulk delete action */}
     <MarkAsUnsafe {...props} />
   </Fragment>
 );

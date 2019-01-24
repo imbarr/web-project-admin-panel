@@ -51,6 +51,14 @@ export default (type, resource, params) => {
       response =>
         HTTPResponseToData(response, type, resource, params),
       reason => {
+        // Уберкостыль
+        // React-admin должен переадресовывать нас на форму с аунтефикацией при получении
+        // HTTP ответа со статусом 401 или 403, но почему-то этого не делает
+        // https://marmelab.com/react-admin/Authentication.html
+        //
+        // Если не использовать window.location.reload(), возникает следующая проблема:
+        // https://github.com/ReactTraining/react-router/issues/4975
+
         if(reason.response !== undefined && [401, 403].indexOf(reason.response.status) >= 0) {
           history.replace('#/login');
           window.location.reload();
