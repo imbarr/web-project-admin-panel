@@ -2,6 +2,9 @@ import {GET_LIST, UPDATE_MANY} from 'react-admin';
 import axios from "axios"
 import config from "./config"
 import { stringify } from 'query-string';
+import createBrowserHistory from "history/createBrowserHistory";
+
+const history = createBrowserHistory();
 
 const requestToHTTP = (type, resource, params) => {
   switch (type) {
@@ -42,5 +45,16 @@ const HTTPResponseToData = (response, type, resource, params) => {
 
 export default (type, resource, params) => {
   const request = requestToHTTP(type, resource, params);
-  return axios(request).then(response => HTTPResponseToData(response, type, resource, params));
+  request.headers = { 'Authorization':  localStorage.getItem('auth')};
+  return axios(request)
+    .then(
+      response =>
+        HTTPResponseToData(response, type, resource, params),
+      reason => {
+        if(reason.response !== undefined && [401, 403].indexOf(reason.response.status) >= 0) {
+          history.replace('#/login');
+          window.location.reload();
+        }
+        throw reason
+      });
 };
