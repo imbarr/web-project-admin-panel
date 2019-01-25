@@ -3,4 +3,6 @@
 1) npm install
 2) npm run start
 
-~~**Пароль:** adminpassword~~ аутентификация еще не реализована
+**Логин:** admin
+
+**Пароль:** adminpassword
